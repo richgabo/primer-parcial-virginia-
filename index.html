@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Examen Completo de Biología</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; max-width: 800px; margin: auto; padding: 20px; background-color: #f4f7f6; }
+        .pregunta { background: white; padding: 15px; margin-bottom: 15px; border-radius: 8px; border: 1px solid #ccc; }
+        .opcion { display: block; margin: 5px 0; cursor: pointer; }
+        .error { color: #d32f2f; font-weight: bold; }
+        .correcta { color: #388e3c; font-weight: bold; }
+        button { background: #2c3e50; color: white; border: none; padding: 15px; width: 100%; cursor: pointer; font-size: 18px; border-radius: 5px; }
+        #resultados { margin-top: 20px; padding: 20px; background: #fff; border-radius: 8px; }
+    </style>
+</head>
+<body>
+    <h1>Examen de Biología: 50 Preguntas</h1>
+    <div id="quiz"></div>
+    <button onclick="calificar()">Calificar Examen</button>
+    <div id="resultados"></div>
+
+    <script>
+        const base = [
+            {q: "1. Un paciente presenta fatiga extrema, anemia y dificultad para transportar oxígeno en la sangre. Al analizar su alimentación, se descubre una deficiencia de un bioelemento esencial para formar hemoglobina. ¿Cuál es el elemento involucrado?", a: ["A. Calcio", "B. Sodio", "C. Hierro", "D. Potasio"], correct: 2},
+            {q: "2. Si los bioelementos primarios desaparecieran de las células, ¿cuál sería la consecuencia más inmediata para los seres vivos?", a: ["A. Se reduciría la digestión celular", "B. Se perdería la capacidad de movimiento", "C. No podrían formarse biomoléculas esenciales como proteínas y carbohidratos", "D. Se detendría la circulación sanguínea"], correct: 2},
+            {q: "3. Un investigador compara dos organismos: uno terrestre y otro marino. Observa que ambos poseen carbono, hidrógeno, oxígeno y nitrógeno en grandes cantidades. ¿Qué conclusión explica mejor esta observación?", a: ["A. Los organismos evolucionan de manera idéntica", "B. Los bioelementos secundarios son iguales", "C. Los bioelementos primarios son indispensables para la estructura y función celular", "D. El agua sustituye a los bioelementos"], correct: 2},
+            {q: "4. Una persona consume suficientes calorías, pero presenta alteraciones en la transmisión de impulsos nerviosos y contracciones musculares. ¿Qué bioelemento secundario probablemente está relacionado con este problema?", a: ["A. Carbono", "B. Oxígeno", "C. Hierro", "D. Sodio"], correct: 3},
+            {q: "5. Los oligoelementos se requieren en cantidades mínimas; sin embargo, su ausencia puede provocar enfermedades graves. ¿Qué reflexión explica mejor esta situación?", a: ["A. Solo son necesarios en organismos pluricelulares", "B. Las células pueden funcionar sin enzimas", "C. Algunas funciones biológicas dependen de pequeñas cantidades de elementos reguladores", "D. Los oligoelementos reemplazan a los primarios"], correct: 2},
+            {q: "6. Durante una investigación, un científico elimina el fósforo de un cultivo celular. Después de varios días, observa que las células no pueden dividirse adecuadamente. ¿Cuál es la explicación más razonable?", a: ["A. El fósforo es fundamental en moléculas como el ADN y el ATP", "B. El fósforo solo es necesario para la respiración", "C. No se obtiene oxígeno sin fósforo", "D. El fósforo regula la temperatura"], correct: 0},
+            {q: "7. Un estudiante afirma que el calcio solo sirve para formar huesos. ¿Cuál de las siguientes opciones demuestra que su afirmación es incompleta?", a: ["A. El calcio ayuda a endurecer tejidos externos", "B. El calcio reemplaza al hierro en la sangre", "C. El calcio es exclusivo de vertebrados", "D. El calcio también participa en la contracción muscular y la comunicación celular"], correct: 3},
+            {q: "8. Un médico detecta problemas en la producción de hormonas tiroideas en varios pacientes de una comunidad. Al estudiar la alimentación de la población, concluye que existe deficiencia de un oligoelemento. ¿Cuál es el más probable?", a: ["A. Zinc", "B. Calcio", "C. Hierro", "D. Yodo"], correct: 3},
+            {q: "9. Un investigador descubre una molécula formada por muchos monosacáridos unidos mediante enlaces glucosídicos y cuya función principal es estructural en plantas. ¿De qué carbohidrato se trata?", a: ["A. Glucosa", "B. Fructosa", "C. Celulosa", "D. Sacarosa"], correct: 2},
+            {q: "10. Si una célula deja de recibir carbohidratos durante un periodo prolongado, ¿qué consecuencia sería más inmediata?", a: ["A. Incremento en la formación de ADN", "B. Producción excesiva de minerales", "C. Formación de energía anaeróbica", "D. Disminución en la disponibilidad rápida de energía celular"], correct: 3},
+            {q: "11. Un estudiante concluye que todos los carbohidratos son perjudiciales para la salud porque algunos azúcares se relacionan con enfermedades metabólicas. Sin embargo, ¿cuál de las siguientes afirmaciones contradice de manera más adecuada esa conclusión?", a: ["A. Muchos carbohidratos funcionan como reserva energética", "B. Los carbohidratos pueden ser sustituidos por lípidos", "C. Los carbohidratos son exclusivos de almacenamiento", "D. Muchos carbohidratos son indispensables en procesos energéticos y estructurales esenciales para el funcionamiento celular"], correct: 3},
+            {q: "12. Una persona mantiene una dieta extremadamente baja en carbohidratos durante varios meses. ¿Qué efecto metabólico sería más lógico esperar inicialmente?", a: ["A. Incremento inmediato de minerales intracelulares", "B. Disminución de energía rápida para rutas metabólicas", "C. Suspensión de la síntesis proteica", "D. Producción excesiva de ADN celular"], correct: 0},
+            {q: "13. En un laboratorio, un científico agrega agua y enzimas digestivas a un polisacárido complejo, obteniendo finalmente múltiples monosacáridos libres. ¿Qué proceso explica mejor este resultado?", a: ["A. Condensación de moléculas", "B. Oxidación celular", "C. Hidrólisis enzimática capaz de romper enlaces glucosídicos mediante la incorporación de agua", "D. Polimerización de azúcares"], correct: 2},
+            {q: "14. Un investigador afirma que todos los carbohidratos cumplen exclusivamente funciones energéticas. ¿Qué situación refuta mejor esta afirmación?", a: ["A. La glucosa participa como combustible metabólico en organismos con respiración celular", "B. El glucógeno es una reserva de energía", "C. La fructosa interviene en rutas metabólicas", "D. La celulosa participa en estructuras de soporte vegetal"], correct: 3},
+            {q: "15. Durante una investigación celular, se observa que determinadas moléculas glucídicas participan en reconocimiento entre células del sistema inmune. ¿Qué conclusión resulta más adecuada?", a: ["A. Algunos carbohidratos intervienen en procesos de comunicación y reconocimiento celular además de funciones energéticas", "B. Los carbohidratos son solo para reserva", "C. El reconocimiento es función exclusiva de proteínas", "D. Los carbohidratos son incapaces de interactuar"], correct: 0},
+            {q: "16. Se analiza por qué los monosacáridos son considerados biomoléculas fundamentales en el metabolismo celular. ¿Qué explicación integra mejor su importancia biológica?", a: ["A. Forman estructuras rígidas", "B. Son moléculas que reemplazan a proteínas y lípidos en formación estructural", "C. Tienen funciones limitadas", "D. Proporcionan energía inmediata"], correct: 1},
+            {q: "17. Un estudiante afirma que todas las proteínas cumplen únicamente funciones estructurales. ¿Qué situación contradice mejor esta afirmación?", a: ["A. El colágeno proporciona soporte mecánico", "B. Algunas proteínas actúan como enzimas capaces de acelerar reacciones químicas", "C. La queratina proporciona resistencia", "D. Las proteínas forman membranas celulares"], correct: 1},
+            {q: "18. Un científico concluye que las proteínas son más complejas que los carbohidratos debido a la variedad de aminoácidos existentes. ¿Qué argumento respalda mejor esta idea?", a: ["A. Los aminoácidos permiten formar estructuras funcionales diversas mediante múltiples combinaciones", "B. Solo están formadas por carbono e hidrógeno", "C. La diversidad depende de la secuencia", "D. Las proteínas carecen de funciones"], correct: 0},
+            {q: "19. Durante un análisis metabólico, un investigador observa que ciertas proteínas permiten el paso selectivo de sustancias a través de la membrana celular. ¿Qué función representan?", a: ["A. Función energética", "B. Función hormonal", "C. Función de almacenamiento", "D. Función de transporte"], correct: 3},
+            {q: "20. Una mutación genética altera un solo aminoácido en la hemoglobina y provoca cambios importantes en el transporte de oxígeno. ¿Qué conclusión es más razonable?", a: ["A. Se conserva la función", "B. La estructura es idéntica", "C. El transporte de oxígeno depende de carbohidratos", "D. Las mutaciones afectan el metabolismo celular"], correct: 3},
+            {q: "21. Se afirma que las proteínas solo se obtienen de alimentos de origen animal. ¿Qué análisis contradice mejor esta afirmación?", a: ["A. Las proteínas vegetales reemplazan funciones metabólicas de origen animal", "B. Los autótrofos usan aminoácidos simples", "C. El origen vegetal es incompleto", "D. Los vegetales usan procesos propios"], correct: 0},
+            {q: "22. En una población de organismos que se reproducen únicamente de manera asexual, ocurre un cambio drástico en las condiciones ambientales. ¿Qué consecuencia evolutiva sería más probable observar?", a: ["A. La baja variabilidad genética podría disminuir la capacidad de adaptación", "B. Aparecen nuevas características rápidamente", "C. Aumenta la diversidad genotípica", "D. El ambiente no influye"], correct: 0},
+            {q: "23. Se compara dos especies similares: una se reproduce sexualmente y otra asexualmente. Después de varias generaciones, se detecta mayor diversidad genética en la primera. ¿Qué proceso explica mejor esta diferencia?", a: ["A. Evita las mutaciones", "B. La combinación de material genético entre progenitores produce nuevas variaciones", "C. Se duplican cromosomas", "D. Requiere procesos complejos"], correct: 1},
+            {q: "24. Una colonia bacteriana se reproduce rápidamente mediante bipartición. ¿Qué ventaja representa este mecanismo en ambientes estables?", a: ["A. Aumenta la variabilidad", "B. Forma gametos", "C. Facilita la reproducción rápida conservando características exitosas", "D. Genera individuos distintos"], correct: 2},
+            {q: "25. Durante una investigación genética, se descubre que ciertos descendientes poseen características diferentes a ambos progenitores. ¿Qué explicación resulta más adecuada?", a: ["A. La recombinación genética durante la meiosis puede originar nuevas combinaciones", "B. Las células modifican el ADN", "C. Se eliminan genes dominantes", "D. Es por variación ambiental"], correct: 0},
+            {q: "26. En ciertas especies vegetales, un fragmento del organismo puede originar un individuo completo sin intervención de gametos. ¿Qué reflexión explica mejor este fenómeno?", a: ["A. Carecen de sexo", "B. Ocurren variaciones espontáneas", "C. Solo sucede en fecundación", "D. Algunas células vegetales conservan información genética para desarrollar organismos completos"], correct: 3},
+            {q: "27. Un investigador analiza por qué la meiosis es fundamental en la reproducción sexual. ¿Cuál es la explicación más adecuada?", a: ["A. Aumenta el número de cromosomas", "B. Reemplaza a la mitosis", "C. Reduce el número cromosómico y favorece variabilidad", "D. Produce células idénticas"], correct: 2},
+            {q: "28. En una población con variabilidad genética reducida surge un agente patógeno nuevo. ¿Cuál sería la consecuencia más probable?", a: ["A. La limitada diversidad disminuye la probabilidad de resistencia", "B. Favorece la adaptación", "C. La estabilidad impide la interacción", "D. La respuesta es eficiente"], correct: 0},
+            {q: "29. Se afirma que la información genética depende únicamente de la cantidad total de ADN. ¿Qué análisis contradice mejor esta idea?", a: ["A. Más ADN es más complejo", "B. El ADN es puramente estructural", "C. Todas las secuencias de ADN poseen importancia funcional", "D. Depende solo de nucleótidos"], correct: 2},
+            {q: "30. Dos individuos poseen versiones distintas de un mismo gen relacionadas con el color de ojos. ¿Qué concepto explica mejor esta diferencia?", a: ["A. Cromosoma", "B. Alelo", "C. Genotipo", "D. Mutación"], correct: 1},
+            {q: "31. En los ácidos nucleicos las bases púricas son:", a: ["A. Citosina y Timina", "B. Timina y Guanina", "C. Adenina y Citosina", "D. Guanina y Adenina"], correct: 3},
+            {q: "32. Los aminoácidos de tipo básico son:", a: ["A. Alanina y Leucina", "B. Aspartato y Glutamato", "C. Serina y Cisteína", "D. Lisina y Arginina"], correct: 3},
+            {q: "33. Los nucleótidos se enlazan por medio de enlaces:", a: ["A. Puentes de Hidrógeno", "B. Fosfodiéster", "C. Glucosídico", "D. Ester"], correct: 1},
+            {q: "34. Año en que James Watson y Francis Crick descubrieron la estructura tridimensional del ácido desoxirribonucleico:", a: ["A. 1953", "B. 1963", "C. 1935", "D. 1936"], correct: 0},
+            {q: "35. Tipo de ARN que se une a aminoácidos y los transporta hasta el ribosoma para formar proteínas:", a: ["A. ARNm", "B. ARNr", "C. ARNt", "D. ARNs"], correct: 2},
+            {q: "36. Están formados por dos cadenas de ADN repetidas que se espiralizan y se mantienen unidas; se distinguen porque son idénticas:", a: ["A. Genes", "B. Nucleótidos", "C. Cromatina", "D. Cromosomas"], correct: 3},
+            {q: "37. Se define como la localización precisa de un gen sobre un cromosoma:", a: ["A. Locus", "B. Cromátida", "C. Alelo", "D. Genoma"], correct: 0},
+            {q: "38. Es el ADN haploide que se encuentra en la mitocondria:", a: ["A. Nuclear", "B. ARN mitocondrial", "C. Ribosomal", "D. ADN mitocondrial"], correct: 3},
+            {q: "39. Se analiza una molécula de ADN y se descubre que el 18% es citosina. ¿Qué porcentaje de adenina debería contener?", a: ["A. 18%", "B. 32%", "C. 36%", "D. 64%"], correct: 1},
+            {q: "40. En cualquier molécula de ADN la proporción entre adenina y citosina siempre debe ser idéntica. ¿Qué análisis basado en las reglas de Chargaff contradice mejor esto?", a: ["A. Se basa en enlaces peptídicos", "B. Depende de la forma cromosómica", "C. La adenina se relaciona con timina, mientras la citosina con la guanina", "D. La citosina reemplaza a la adenina"], correct: 2},
+            {q: "41. Es cuando el ADN se copia a sí mismo:", a: ["A. Replicación", "B. Transcripción", "C. Traducción", "D. Duplicación"], correct: 0},
+            {q: "42. Un científico observa diferencias funcionales entre células aunque poseen el mismo ADN. ¿Qué explicación es razonable?", a: ["A. Hay genes innecesarios", "B. Las neuronas cambian su ADN", "C. Diferentes tipos celulares expresan genes distintos", "D. Son independientes"], correct: 2},
+            {q: "43. Durante la síntesis, el ribosoma lee grupos de tres bases en el ARNm. ¿Cómo se llama cada grupo?", a: ["A. Anticodón", "B. Codón", "C. Cromosoma", "D. Nucleótido"], correct: 1},
+            {q: "44. ¿Cuál es la función principal del código genético?", a: ["A. Síntesis proteica general", "B. Transporte celular", "C. Estructura celular", "D. Relacionar codones con aminoácidos específicos"], correct: 3},
+            {q: "45. Secuencia de tres nucleótidos en el ADN o ARN que funciona como unidad de información:", a: ["A. Nucleótidos", "B. Codón", "C. Triplete ADN", "D. Triplete ARN"], correct: 1},
+            {q: "46. ¿Dónde se encuentra el ARN?", a: ["A. En el núcleo y en el citoplasma", "B. Solo mitocondrias", "C. Solo núcleo", "D. No está presente"], correct: 0},
+            {q: "47. ¿Cuántos codones posibles tiene el código genético?", a: ["A. 20", "B. 32", "C. 64", "D. 83"], correct: 2},
+            {q: "48. ¿Cuánto mide el ADN de una sola célula?", a: ["A. 2 mm", "B. 2 metros", "C. 4 metros", "D. 4 mm"], correct: 1},
+            {q: "49. Proceso por el cual una célula somática se divide en dos células hijas genéticamente idénticas:", a: ["A. Mitosis", "B. Clonación", "C. Meiosis", "D. Bipartición"], correct: 0},
+            {q: "50. Es un proceso evolutivo donde los machos han desarrollado colores brillantes, cantos y tamaño llamativos:", a: ["A. Adaptabilidad", "B. Evolución simple", "C. Selección natural", "D. Dimorfismo sexual"], correct: 3}
+        ];
+
+        const quizDiv = document.getElementById('quiz');
+        base.sort(() => Math.random() - 0.5); 
+        base.forEach((item, i) => {
+            let div = document.createElement('div');
+            div.className = 'pregunta';
+            div.innerHTML = `<p>${i+1}. ${item.q}</p>`;
+            item.a.forEach((opt, j) => {
+                div.innerHTML += `<label class="opcion"><input type="radio" name="p${i}" value="${j}"> ${opt}</label>`;
+            });
+            quizDiv.appendChild(div);
+        });
+
+        function calificar() {
+            let score = 0;
+            let resDiv = document.getElementById('resultados');
+            resDiv.innerHTML = "<h3>Resultados:</h3>";
+            base.forEach((item, i) => {
+                const selected = document.querySelector(`input[name="p${i}"]:checked`);
+                const val = selected ? parseInt(selected.value) : -1;
+                if (val === item.correct) {
+                    score++;
+                } else {
+                    resDiv.innerHTML += `<p class="error">Pregunta ${i+1} incorrecta. La respuesta correcta era: ${item.a[item.correct]}</p>`;
+                }
+            });
+            resDiv.innerHTML = `<h2>Tu puntaje: ${score}/50</h2>` + resDiv.innerHTML;
+            window.scrollTo(0, document.body.scrollHeight);
+        }
+    </script>
+</body>
+</html>
